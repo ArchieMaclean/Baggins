@@ -1,7 +1,9 @@
 import speech_rec, os
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord.opus import load_opus
 
+load_opus('/usr/lib/libopusurl.so.0')
 load_dotenv('.env')
 
 prefix = "#"
