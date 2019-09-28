@@ -3,13 +3,25 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from discord.opus import load_opus
-from discord import VoiceClient
+
+
+# Setup up
 
 load_opus('/usr/lib/libopusurl.so.0')
 load_dotenv('.env')
 
 prefix = "#"
 bot = commands.Bot(command_prefix=prefix)
+
+current_voice_channels = []
+
+def log_channel():
+    log_channel = bot.get_channel(discord.utils.get(bot.get_all_channels(),name='log').id)
+    print(log_channel)
+    return log_channel
+
+async def log_text(text):
+    await log_channel().send(text)
 
 
 @bot.event
@@ -19,8 +31,10 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-	print("The message's content was", message.content)
-	await bot.process_commands(message)
+    if (message.author.id != bot.user.id):
+        await log_text(message.content)
+    print("The message's content was", message.content)
+    await bot.process_commands(message)
 
 
 @bot.command()
@@ -33,7 +47,18 @@ async def start(ctx):
         await ctx.send('You must be in a voice channel to run this command.')
         return;
     channel = bot.get_channel(user_voice.channel.id)
-    await channel.connect()
+    vc = await channel.connect()
+    current_voice_channels.append(vc)
     await ctx.send('Started')
+
+
+@bot.command()
+async def stop(ctx):
+    '''
+    Quit from all current voice channels.
+    '''
+    for vc in current_voice_channels:
+        await vc.disconnect()
+
 
 bot.run(os.getenv('TOKEN'))
