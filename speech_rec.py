@@ -1,3 +1,5 @@
+# OLD (probably)
+
 import speech_recognition as sr
 class SpeechRec:
 	def __init__(self):

@@ -1,11 +1,14 @@
+# OLD
+
 import speech_rec, os
 from dotenv import load_dotenv
 import discord
+from discord import *
 from discord.ext import commands
 from discord.opus import load_opus
 
 
-# Setup up
+# Setup
 
 load_opus('/usr/lib/libopusurl.so.0')
 load_dotenv('.env')
@@ -48,6 +51,7 @@ async def start(ctx):
         return;
     channel = bot.get_channel(user_voice.channel.id)
     vc = await channel.connect()
+    channel.listen()
     current_voice_channels.append(vc)
     await ctx.send('Started')
 

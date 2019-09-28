@@ -1,0 +1,23 @@
+{
+  "name": "replit-codejam-8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArchieMaclean/repl.it-codejam-8.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArchieMaclean/repl.it-codejam-8/issues"
+  },
+  "homepage": "https://github.com/ArchieMaclean/repl.it-codejam-8#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.1.0"
+  }
+}
