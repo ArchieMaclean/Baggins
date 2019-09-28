@@ -1,7 +1,9 @@
 import speech_rec, os
 from dotenv import load_dotenv
+import discord
 from discord.ext import commands
 from discord.opus import load_opus
+from discord import VoiceClient
 
 load_opus('/usr/lib/libopusurl.so.0')
 load_dotenv('.env')
@@ -24,8 +26,14 @@ async def on_message(message):
 @bot.command()
 async def start(ctx):
     '''
-    This text will be shown in the help command
+    Start a voice channel. You should be in the channel you want the bot to connect to.
     '''
+    user_voice = ctx.message.author.voice
+    if not user_voice:
+        await ctx.send('You must be in a voice channel to run this command.')
+        return;
+    channel = bot.get_channel(user_voice.channel.id)
+    await channel.connect()
     await ctx.send('Started')
 
 bot.run(os.getenv('TOKEN'))
