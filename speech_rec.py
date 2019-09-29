@@ -1,22 +1,31 @@
-# OLD (probably)
+# Run from main.js
 
 import speech_recognition as sr
-import wave
+import wave, sys, os
 
-# Speech Recognition wants it as a wav file, so convert
-with open('data.pcm', 'rb') as pcmfile:
+try:
+	file_name = sys.argv[1]
+except:
+	print('Couldn\'t find audio file')
+	sys.exit(1)
+
+# Speech Recognition wants it as a wav file, so convert to wav
+with open(f'{file_name}.pcm','rb') as pcmfile:
 	pcmdata = pcmfile.read()
-with wave.open('data.wav', 'wb') as wavfile:
+with wave.open(f'{file_name}.wav', 'wb') as wavfile:
 	wavfile.setparams((2, 2, 44100, 0, 'NONE', 'NONE'))
 	wavfile.writeframes(pcmdata)
 
 r = sr.Recognizer()
-with sr.AudioFile('data.wav') as source:
+with sr.AudioFile(f'{file_name}.wav') as source:
 	audio = r.record(source)
+
 
 try:
 	print("You said " + r.recognize_google(audio))
-except sr.UnknownValueError:
-	print("Could not understand audio")
+	os.remove(f'{file_name}.pcm')
+	os.remove(f'{file_name}.wav',)
+except sr.UnknownValueError as e:
+	print("Could not understand audio. {0}".format(str(e)))
 except sr.RequestError as e:
-	print("Could not request results; {0}".format(e))
+	print("Could not request results. {0}".format(str(e)))

@@ -3,6 +3,7 @@ const { Readable } = require('stream');
 require('dotenv').config();
 const fs = require('fs');
 const opus = require('node-opus');
+const spawn = require('child_process').spawn;
 
 
 const SILENCE_FRAME = Buffer.from([0xF8,0xFF,0xFE]);
@@ -17,57 +18,71 @@ const client = new Discord.Client();
 const prefix = '&';
 
 const connected_channels = [];
-const log_channel = 'log'
 
-function logAllEmitterEvents(eventEmitter)
-{
-    var emitToLog = eventEmitter.emit;
 
-    eventEmitter.emit = function () {
-        var event = arguments[0];
-        console.log("event emitted: " + event);
-        emitToLog.apply(eventEmitter, arguments);
-    }
+const getText = id => {
+    const process = spawn('python3',['speech_rec.py',id]);
+    return new Promise((res, rej) => {
+        process.stdout.on('data', data => {
+            console.log('ayyy');
+            res(data.toString());
+        });
+        process.stdout.on('error', err => {
+            console.log(`oof ${err}`)
+            rej(err)
+        });
+    });
 }
 
+async function log_audio(id) {
+    getText(id)
+    .then(text => {
+        console.log(text);
+        log(text);
+    })
+    .catch(e => {
+        console.log(e);
+        log(`The following error occurred:
+${err}`);
+    })
+}
 
 const log = message => {
-    const ch = client.channels.find('name',log_channel);
-    if (ch) ch.send(message);
+    const log_channel = client.channels.find(ch => ch.name === 'log')
+    log_channel.send(message);
 }
 
 const help = msg => {
-    msg.channel.send('Recorder');
+    msg.channel.send(`
+Baggins - A Discord voice chat moderation bot
+Commands:
+> &help - show this message
+> &connect - connect to current voice channel
+> &disconnect - disconnect from all voice channels
+`);
 }
 
 const start = message => {
     if (!message.member.voiceChannel) {
-        console.log(message.member);
         message.channel.send('You need to be in a voice channel to run that command.');
         return;
     }
     message.member.voiceChannel.join()
     .then(c => {
+        // This is a hack that enables the connection to receive data
         c.playOpusStream(new Silence());
         const receiver = c.createReceiver();
         c.on('speaking', (user, speaking) => {
             if (speaking) {
                 let stream;
                 let outStream;
+                const id = Math.round(Math.random()*10000000);
                 stream = receiver.createPCMStream(user);
-                console.log(stream);
-                // logAllEmitterEvents(stream);
-                outStream = fs.createWriteStream('./data.pcm');
+                outStream = fs.createWriteStream(`./${id}.pcm`);
                 stream.pipe(outStream);
-                stream.on('readable', data => {
-                    console.log(`readable: ${stream.read()}`);
-                });
-                stream.on('resume', data => {
-                    console.log(`resume: ${stream.read()}`);
-                });
                 stream.on('end',_ => {
-                    console.log('ended');
                     outStream.end();
+                    log_audio(id);
                 });
             }
         });
@@ -84,11 +99,11 @@ const stop = message => {
     if (message) message.channel.send('Disconnected.')
 }
 
-const run = (message) => {
+const run = message => {
     switch(message.content.slice(prefix.length)) {
-        case 'start':
+        case 'connect':
             start(message); break;
-        case 'stop':
+        case 'disconnect':
             stop(message); break;
         default:
             help(message); break;
