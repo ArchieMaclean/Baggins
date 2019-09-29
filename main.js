@@ -117,12 +117,19 @@ const stop = message => {
     if (message) message.channel.send('Disconnected.')
 }
 
+const dump = message => {
+    if (current_file != null) message.channel.send('Current recording:',{files: ['./audio_files/'+current_file]});
+    else message.channel.send('No session currently.');
+}
+
 const run = message => {
     switch(message.content.slice(prefix.length)) {
         case 'connect':
             start(message); break;
         case 'disconnect':
             stop(message); break;
+        case 'dump':
+            dump(message); break;
         default:
             help(message); break;
     }
