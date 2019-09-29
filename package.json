@@ -19,7 +19,6 @@
   "dependencies": {
     "discord.js": "^11.5.1",
     "dotenv": "^8.1.0",
-    "node-opus": "^0.3.2",
-    "nodemon": "^1.19.2"
+    "node-opus": "^0.3.2"
   }
 }
