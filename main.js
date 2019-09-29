@@ -23,28 +23,21 @@ const connected_channels = [];
 const getText = id => {
     const process = spawn('python3',['speech_rec.py',id]);
     return new Promise((res, rej) => {
-        process.stdout.on('data', data => {
-            console.log('ayyy');
-            res(data.toString());
-        });
-        process.stdout.on('error', err => {
-            console.log(`oof ${err}`)
-            rej(err)
-        });
+        process.stdout.on('data', data => res(data.toString()));
+        process.stdout.on('error', err => rej(err));
     });
 }
 
 async function log_audio(id,user) {
     getText(id)
     .then(text => {
-        console.log(text);
         log(`${user.username} | ${new Date().toLocaleTimeString()}:
 > ${text}`);
         // clean up files
-        fs.unlink(`${id}.pcm`, err => {
+        fs.unlink(`audio_files/${id}.pcm`, err => {
             if (err) throw(err);
         });
-        fs.unlink(`${id}.wav`, err => {
+        fs.unlink(`audio_files/${id}.wav`, err => {
             if (err) throw(err);
         });
     })
@@ -86,7 +79,7 @@ const start = message => {
                 const id = Math.round(Math.random()*10000000);
                 // Audio stream
                 const stream = receiver.createPCMStream(user);
-                const outStream = fs.createWriteStream(`./${id}.pcm`);
+                const outStream = fs.createWriteStream(`audio_files/${id}.pcm`);
                 stream.pipe(outStream);
                 stream.on('end',_ => {
                     outStream.end();

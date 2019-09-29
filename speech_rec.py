@@ -4,7 +4,7 @@ import speech_recognition as sr
 import wave, sys, os
 
 try:
-	file_name = sys.argv[1]
+	file_name = 'audio_files/'+sys.argv[1]
 except:
 	print('Couldn\'t find audio file')
 	sys.exit(1)
