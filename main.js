@@ -16,11 +16,15 @@ class Silence extends Readable {
 
 const client = new Discord.Client();
 const prefix = '&';
+let current_file = null;
 
 const connected_channels = [];
 
 
 const getText = id => {
+    /*if (current_file === null) {
+        current_file = (new Date).toUTCString()+'.wav';
+    }*/
     const process = spawn('python3',['speech_rec.py',id]);
     return new Promise((res, rej) => {
         process.stdout.on('data', data => res(data.toString()));
@@ -76,7 +80,7 @@ const start = message => {
         c.on('speaking', (user, speaking) => {
             if (speaking) {
                 // Use a random id to store files in - the files will be deleted once they're finished
-                const id = Math.round(Math.random()*10000000);
+                const id = 'chunk'+Math.round(Math.random()*10000000);
                 // Audio stream
                 const stream = receiver.createPCMStream(user);
                 const outStream = fs.createWriteStream(`audio_files/${id}.pcm`);
@@ -97,6 +101,7 @@ const stop = message => {
     connected_channels.forEach(c => {
         c.disconnect();
     });
+    current_file = null;
     if (message) message.channel.send('Disconnected.')
 }
 
