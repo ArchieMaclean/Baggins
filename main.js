@@ -22,10 +22,11 @@ const connected_channels = [];
 
 
 const getText = id => {
-    /*if (current_file === null) {
+    if (current_file === null) {
         current_file = (new Date).toUTCString()+'.wav';
-    }*/
-    const process = spawn('python3',['speech_rec.py',id]);
+        current_file = current_file.replace(/\s/g,'');
+    }
+    const process = spawn('python3',['speech_rec.py',id,current_file]);
     return new Promise((res, rej) => {
         process.stdout.on('data', data => res(data.toString()));
         process.stdout.on('error', err => rej(err));

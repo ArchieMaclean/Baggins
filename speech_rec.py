@@ -1,12 +1,13 @@
 # Run from main.js
 
 import speech_recognition as sr
-import wave, sys, os, dotenv
+import wave, sys, os, dotenv, shutil
+from pydub import AudioSegment
 dotenv.load_dotenv('.env')
 
 try:
 	file_name = 'audio_files/'+sys.argv[1]
-	#current_session = 'audio_files/'+sys.argv[2]
+	current_session = 'audio_files/'+sys.argv[2]
 except:
 	print('Couldn\'t find audio file')
 	sys.exit(1)
@@ -20,23 +21,26 @@ try:
 except:
 	print('errorerror')
 # Add to current file
-'''
-try:
-	data = []
-	with wave.open(current_session) as cs:
-		data.append( [cs.getparams(), cs.readframes(cs.getnframes())] )
-		with wave.open(file_name+'.wav') as w:
-			data.append( [w.getparams(), w.readframes(w.getnframes())] )
+infiles = [current_session, file_name+'.wav']
+outfile = current_session
 
-		cs.setparams(data[0][0])
-		cs.writeframes(data[0][1])
-		cs.writeframes(data[1][1])
+if (os.path.isfile(current_session)):
+	data= []
+	for infile in infiles:
+		w = wave.open(infile, 'rb')
+		data.append( [w.getparams(), w.readframes(w.getnframes())] )
+		w.close()
+
+	output = wave.open(outfile, 'wb')
+	output.setparams(data[0][0])
+	output.writeframes(data[0][1])
+	output.writeframes(data[1][1])
+	output.close()
+else:
+	shutil.copyfile(file_name+'.wav',outfile)
+
 
 	
-except e:
-	print('Error: '+e)
-	sys.exit(1)
-'''
 r = sr.Recognizer()
 with sr.AudioFile(f'{file_name}.wav') as source:
 	audio = r.record(source)
