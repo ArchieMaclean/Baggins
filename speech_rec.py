@@ -23,8 +23,6 @@ with sr.AudioFile(f'{file_name}.wav') as source:
 
 try:
 	print("You said " + r.recognize_google(audio))
-	os.remove(f'{file_name}.pcm')
-	os.remove(f'{file_name}.wav',)
 except sr.UnknownValueError as e:
 	print("Could not understand audio. {0}".format(str(e)))
 except sr.RequestError as e:

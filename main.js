@@ -39,6 +39,13 @@ async function log_audio(id) {
     .then(text => {
         console.log(text);
         log(text);
+        // clean up files
+        fs.unlink(`${id}.pcm`, err => {
+            if (err) throw(err);
+        });
+        fs.unlink(`${id}.wav`, err => {
+            if (err) throw(err);
+        });
     })
     .catch(e => {
         console.log(e);
