@@ -36,8 +36,6 @@ const getText = id => {
 async function log_audio(id,user) {
     getText(id)
     .then(text => {
-        log(`${user.username} | ${new Date().toLocaleTimeString()}:
-> ${cleanMessage(text)}`);
         // clean up files
         fs.unlink(`audio_files/${id}.pcm`, err => {
             if (err) throw(err);
@@ -45,6 +43,8 @@ async function log_audio(id,user) {
         fs.unlink(`audio_files/${id}.wav`, err => {
             if (err) throw(err);
         });
+        if (text.trim().length > 0) log(`${user.username} | ${new Date().toLocaleTimeString()}:
+> ${cleanMessage(text)}`);
     })
     .catch(e => {
         console.log(e);
@@ -64,7 +64,6 @@ const cleanMessage = (msg) => {
 }
 
 const log = message => {
-    if (message.length === 0) return;
     const log_channel = client.channels.find(ch => ch.name === 'log')
     log_channel.send(message);
 }
@@ -73,9 +72,11 @@ const help = msg => {
     msg.channel.send(`
 Baggins - A Discord voice chat moderation bot
 Commands:
-> &help - show this message
-> &connect - connect to current voice channel
-> &disconnect - disconnect from all voice channels
+> \`&help\` - show this message
+> \`&connect\` - connect to current voice channel
+> \`&disconnect\` - disconnect from all voice channels
+> \`&dump\` - upload the current session audio file
+Baggins updates when someone switches off their mic after speaking; this means that logs are only completed then and the session audio file is also only updated then.
 `);
 }
 
