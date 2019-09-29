@@ -37,7 +37,7 @@ async function log_audio(id,user) {
     getText(id)
     .then(text => {
         log(`${user.username} | ${new Date().toLocaleTimeString()}:
-> ${text}`);
+> ${cleanMessage(text)}`);
         // clean up files
         fs.unlink(`audio_files/${id}.pcm`, err => {
             if (err) throw(err);
@@ -53,7 +53,18 @@ ${err}`);
     })
 }
 
+const cleanMessage = (msg) => {
+    // Caution: explicit material ahead!
+    msg = msg.toLowerCase();
+    const explicit = [/fuck/,/shit/,/porn/,/cunt/];
+    for (const re of explicit) {
+        msg = msg.replace(re,'\\*\\*\\*\\*');
+    }
+    return msg;
+}
+
 const log = message => {
+    if (message.length === 0) return;
     const log_channel = client.channels.find(ch => ch.name === 'log')
     log_channel.send(message);
 }

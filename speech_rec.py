@@ -31,11 +31,10 @@ if (os.path.isfile(current_session)):
 		data.append( [w.getparams(), w.readframes(w.getnframes())] )
 		w.close()
 
-	output = wave.open(outfile, 'wb')
-	output.setparams(data[0][0])
-	output.writeframes(data[0][1])
-	output.writeframes(data[1][1])
-	output.close()
+	with wave.open(outfile, 'wb') as output:
+		output.setparams(data[0][0])
+		output.writeframes(data[0][1])
+		output.writeframes(data[1][1])
 else:
 	shutil.copyfile(file_name+'.wav',outfile)
 
