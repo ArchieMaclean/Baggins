@@ -1,4 +1,3 @@
 SpeechRecognition
 wave
-dotenv
-shutil
+python-dotenv
