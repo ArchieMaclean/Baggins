@@ -2,7 +2,6 @@
 
 import speech_recognition as sr
 import wave, sys, os, dotenv, shutil
-from pydub import AudioSegment
 dotenv.load_dotenv('.env')
 
 try:

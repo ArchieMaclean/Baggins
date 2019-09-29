@@ -1,0 +1,5 @@
+SpeechRecognition
+wave
+sys
+dotenv
+shutil
