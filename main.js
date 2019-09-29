@@ -34,11 +34,12 @@ const getText = id => {
     });
 }
 
-async function log_audio(id) {
+async function log_audio(id,user) {
     getText(id)
     .then(text => {
         console.log(text);
-        log(text);
+        log(`${user.username} | ${new Date().toLocaleTimeString()}:
+> ${text}`);
         // clean up files
         fs.unlink(`${id}.pcm`, err => {
             if (err) throw(err);
@@ -81,15 +82,15 @@ const start = message => {
         const receiver = c.createReceiver();
         c.on('speaking', (user, speaking) => {
             if (speaking) {
-                let stream;
-                let outStream;
+                // Use a random id to store files in - the files will be deleted once they're finished
                 const id = Math.round(Math.random()*10000000);
-                stream = receiver.createPCMStream(user);
-                outStream = fs.createWriteStream(`./${id}.pcm`);
+                // Audio stream
+                const stream = receiver.createPCMStream(user);
+                const outStream = fs.createWriteStream(`./${id}.pcm`);
                 stream.pipe(outStream);
                 stream.on('end',_ => {
                     outStream.end();
-                    log_audio(id);
+                    log_audio(id,user);
                 });
             }
         });
